@@ -7,8 +7,8 @@ const User = require('../model/userModel');
 // @router GET/api/Notes
 // @access Private
 const getNotes = asyncHandler(async (req, res) => {
-  const Notes = await Note.find({ user: req.user.id });
-  res.status(200).json(Notes);
+  const notes = await Note.find({ user: req.user.id });
+  res.status(200).json(notes);
 });
 // @desc    set Notes
 // @router POST/api/Notes
@@ -18,12 +18,12 @@ const setNotes = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('Please add text field');
   }
-  const Note = await Note.create({
+  const note = await Note.create({
     text: req.body.text,
     user: req.user.id,
   });
 
-  res.status(200).json(Note);
+  res.status(200).json(note);
 });
 // @desc    Update Notes
 // @router PUT/api/Notes/:id
