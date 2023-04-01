@@ -4,16 +4,31 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { login, reset } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
 function Login() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const { email, password } = formData;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  let schema = Yup.object().shape({
+    email: Yup.string()
+      .email('Email should be valid')
+      .required('Error: Email is required'),
+    password: Yup.string().required('Error: Password is required'),
+  });
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      dispatch(login(values));
+    },
+  });
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
@@ -30,23 +45,6 @@ function Login() {
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const handleChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    const userData = {
-      email,
-      password,
-    };
-    dispatch(login(userData));
-  };
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -62,31 +60,52 @@ function Login() {
       </section>
 
       <section className='form content'>
-        <form onSubmit={onSubmit}>
-          <div className='form-group'>
+        <form action='' onSubmit={formik.handleSubmit}>
+          <div className='mt-3'>
             <input
               type='email'
+              name='email'
+              placeholder='Email'
               className='form-control'
               id='email'
-              name='email'
-              value={email}
-              placeholder='Enter your email'
-              onChange={handleChange}
+              onChange={formik.handleChange('email')}
+              onBlur={formik.handleBlur('email')}
+              value={formik.values.email}
             />
           </div>
 
-          <div className='form-group'>
+          <div className='error'>
+            {formik.touched.email && formik.errors.email ? (
+              <div>{formik.errors.email}</div>
+            ) : null}
+          </div>
+          <div className='mt-3'>
             <input
               type='password'
+              name='password'
+              placeholder='Password'
               className='form-control'
               id='password'
-              name='password'
-              value={password}
-              placeholder='Enter your password'
-              onChange={handleChange}
+              onChange={formik.handleChange('password')}
+              value={formik.values.password}
             />
           </div>
-          <div className='form-group'>
+          <div className='error'>
+            {formik.touched.password && formik.errors.password ? (
+              <div>{formik.errors.password}</div>
+            ) : null}
+          </div>
+
+          <div
+            className='d-flex align-items-center justify-content-between py-2 '
+            id='forgot_password'
+          >
+            <Link to='/forgot-password'>Forgot Password?</Link>
+            <Link to='/register' className='button signup'>
+              Sign Up
+            </Link>
+          </div>
+          <div className='d-flex justify-content-center gap-15 align-items-center mt-5'>
             <button type='submit' className='btn btn-block'>
               Submit
             </button>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { createGoal } from '../features/goals/goalSlice';
+import { createNote } from '../features/notes/noteSlice';
 
 function Goalform() {
   const [text, setText] = useState('');
@@ -12,7 +12,7 @@ function Goalform() {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    dispatch(createGoal({ text }));
+    dispatch(createNote({ text }));
     setText('');
   };
   return (

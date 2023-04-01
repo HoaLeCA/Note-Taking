@@ -1,24 +1,24 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import goalService from './goalService';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
+import noteService from './noteService';
 
 // create initial state
 
 const initialState = {
-  goals: [],
+  notes: [],
   isError: false,
   isSuccess: false,
   isLoading: false,
   message: '',
 };
-// create new goal
+// create new note
 
-export const createGoal = createAsyncThunk(
-  'goals/create',
-  async (goalData, thunkAPI) => {
+export const createNote = createAsyncThunk(
+  'notes/create',
+  async (noteData, thunkAPI) => {
     try {
       // get token from user
       const token = thunkAPI.getState().auth.user.token;
-      return await goalService.createGoal(goalData, token);
+      return await noteService.createNote(noteData, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -30,15 +30,15 @@ export const createGoal = createAsyncThunk(
     }
   }
 );
-//Delete goal
+//Delete note
 
-export const deleteGoal = createAsyncThunk(
-  'goals/delete',
+export const deleteNote = createAsyncThunk(
+  'notes/delete',
   async (id, thunkAPI) => {
     try {
       // get token from user
       const token = thunkAPI.getState().auth.user.token;
-      return await goalService.deleteGoal(id, token);
+      return await noteService.deleteNote(id, token);
     } catch (error) {
       const message =
         (error.response &&
@@ -51,15 +51,15 @@ export const deleteGoal = createAsyncThunk(
   }
 );
 
-// get user goals
+// get user notes
 
-export const getGoals = createAsyncThunk(
-  'goals/getAll',
+export const getNotes = createAsyncThunk(
+  'notes/get-goals',
   async (_, thunkAPI) => {
     try {
       // get token from user
       const token = thunkAPI.getState().auth.user.token;
-      return await goalService.getGoals(token);
+      return await noteService.getNotes(token);
     } catch (error) {
       const message =
         (error.response &&
@@ -71,63 +71,69 @@ export const getGoals = createAsyncThunk(
     }
   }
 );
+// create supplierslice --> it is an object, reducers is actions
+export const resetState = createAction('Reset_all');
 
 // create goalslice
 
-export const goalslice = createSlice({
-  name: 'goal',
+export const noteSlice = createSlice({
+  name: 'note',
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: (state) => {
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = false;
+      state.message = '';
+    },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createGoal.pending, (state) => {
+      .addCase(createNote.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createGoal.fulfilled, (state, action) => {
+      .addCase(createNote.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.goals.push(action.payload);
+        state.notes.push(action.payload);
       })
-      .addCase(createGoal.rejected, (state, action) => {
+      .addCase(createNote.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(getGoals.pending, (state) => {
+      .addCase(getNotes.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getGoals.fulfilled, (state, action) => {
+      .addCase(getNotes.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.goals = action.payload;
+        state.notes = action.payload;
       })
-      .addCase(getGoals.rejected, (state, action) => {
+      .addCase(getNotes.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
-      .addCase(deleteGoal.pending, (state) => {
+      .addCase(deleteNote.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteGoal.fulfilled, (state, action) => {
+      .addCase(deleteNote.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.goals = state.goals.filter(
-          (goal) => goal._id !== action.payload.id
+        state.notes = state.notes.filter(
+          (note) => note._id !== action.payload.id
         );
       })
-      .addCase(deleteGoal.rejected, (state, action) => {
+      .addCase(deleteNote.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-      });
+      })
+      .addCase(resetState, () => initialState);
   },
-
-  // set to initial state, it is different with user as we don't want user clear data
 });
 
-export const { reset } = goalslice.actions;
+export const { reset } = noteSlice.actions;
 
-export default goalslice.reducer; // ==> add this to store to use
+export default noteSlice.reducer; // ==> add this to store to use

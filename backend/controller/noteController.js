@@ -57,8 +57,8 @@ const updateNotes = asyncHandler(async (req, res) => {
 // @router DELETE/api/Notes/:id
 // @access Private
 const deleteNotes = asyncHandler(async (req, res) => {
-  const Note = await Note.findById(req.params.id);
-  if (!Note) {
+  const note = await Note.findById(req.params.id);
+  if (!note) {
     res.status(400);
     throw new Error('Note not found');
   }
@@ -69,11 +69,11 @@ const deleteNotes = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
   // make sure the login user matched Note user
-  if (Note.user.toString() !== req.user.id) {
+  if (note.user.toString() !== req.user.id) {
     res.status(401);
     throw new Error('User not authorized');
   }
-  await Note.remove();
+  await note.remove();
   res.status(200).json({ id: req.params.id });
 });
 

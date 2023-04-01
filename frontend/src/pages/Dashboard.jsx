@@ -1,31 +1,28 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import Goalform from '../components/Goalform';
+import Noteform from '../components/Noteform';
 import Spinner from '../components/Spinner';
-import GoalItem from '../components/GoalItem';
+import NoteItem from '../components/NoteItem';
 
-import { getGoals, reset } from '../features/goals/goalSlice';
+import { getNotes, reset } from '../features/notes/noteSlice';
 
 function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { user } = useSelector((state) => state.auth);
-  const { goals, isLoading } = useSelector((state) => state.goals);
+  const { notes, isLoading } = useSelector((state) => state.notes);
   useEffect(() => {
-    // if (isError) {
-    //   console.log(message);
-    // }
     if (!user) {
       navigate('/login');
     }
-    dispatch(getGoals());
+    dispatch(getNotes());
 
     return () => {
       dispatch(reset());
     };
-  }, [user, navigate, dispatch]); //, isError, message
+  }, [user, navigate, dispatch]);
 
   if (isLoading) {
     return <Spinner />;
@@ -39,19 +36,19 @@ function Dashboard() {
       </section>
       <div className='content'>
         <section className=''>
-          {goals.length > 0 ? (
+          {notes.length > 0 ? (
             <div>
-              {goals.map((goal) => (
-                <GoalItem key={goal._id} goal={goal} />
+              {notes.map((note) => (
+                <NoteItem key={note._id} note={note} />
               ))}
             </div>
           ) : (
-            <h3 className='fs-5'>You have not set any notes</h3>
+            <h3 className='fs-5'>You have not set any notes yet.</h3>
           )}
         </section>
       </div>
 
-      <Goalform />
+      <Noteform />
     </>
   );
 }
