@@ -5,18 +5,38 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { register, reset } from '../features/auth/authSlice';
 import Spinner from '../components/Spinner';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import CustomInput from '../components/CustomInput';
 
 function Register() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    password2: '',
-  });
-  const { name, email, password, password2 } = formData;
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  let schema = Yup.object().shape({
+    name: Yup.string().required('Error: name is required'),
+    email: Yup.string()
+      .email('Email should be valid')
+      .required('Error: Email is required'),
+    password: Yup.string().required('Error: Password is required'),
+    password2: Yup.string()
+      .required('Error: Confirm Password is required')
+      .oneOf(
+        [Yup.ref('password'), null],
+        'Confirm password Must match "password" field value'
+      ),
+  });
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: '',
+      password2: '',
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      dispatch(register(values));
+    },
+  });
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
@@ -33,29 +53,6 @@ function Register() {
     dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
-  const handleChange = (e) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-
-    //     // check password match
-    if (password !== password2) {
-      toast.error('Password do not match');
-    } else {
-      const userData = {
-        name,
-        email,
-        password,
-      };
-      dispatch(register(userData));
-    }
-  };
-
   if (isLoading) {
     return <Spinner />;
   }
@@ -70,52 +67,75 @@ function Register() {
       </section>
 
       <section className='form content'>
-        <form onSubmit={onSubmit}>
-          <div className='form-group'>
-            <input
+        <form onSubmit={formik.handleSubmit}>
+          <div className='mt-3'>
+            <CustomInput
               type='text'
+              name='name'
+              label='Name'
               className='form-control'
               id='name'
-              name='name'
-              value={name}
-              placeholder='Enter your name'
-              onChange={handleChange}
+              onChange={formik.handleChange('name')}
+              onBlur={formik.handleBlur('name')}
+              value={formik.values.name}
             />
           </div>
-          <div className='form-group'>
-            <input
+          <div className='error'>
+            {formik.touched.name && formik.errors.name ? (
+              <div>{formik.errors.name}</div>
+            ) : null}
+          </div>
+          <div className='mt-3'>
+            <CustomInput
               type='email'
+              name='email'
+              label='Email'
               className='form-control'
               id='email'
-              name='email'
-              value={email}
-              placeholder='Enter your email'
-              onChange={handleChange}
+              onChange={formik.handleChange('email')}
+              onBlur={formik.handleBlur('email')}
+              value={formik.values.email}
             />
           </div>
-          <div className='form-group'>
-            <input
+
+          <div className='error'>
+            {formik.touched.email && formik.errors.email ? (
+              <div>{formik.errors.email}</div>
+            ) : null}
+          </div>
+          <div className='mt-3'>
+            <CustomInput
               type='password'
+              name='password'
+              label='Password'
               className='form-control'
               id='password'
-              name='password'
-              value={password}
-              placeholder='Enter your password'
-              onChange={handleChange}
+              onChange={formik.handleChange('password')}
+              value={formik.values.password}
             />
           </div>
-          <div className='form-group'>
-            <input
+          <div className='error'>
+            {formik.touched.password && formik.errors.password ? (
+              <div>{formik.errors.password}</div>
+            ) : null}
+          </div>
+          <div className='mt-3'>
+            <CustomInput
               type='password'
-              className='form-control'
-              id='password2'
               name='password2'
-              value={password2}
-              placeholder='Confirm password'
-              onChange={handleChange}
+              label='Confirm Password'
+              className='form-control'
+              id='password1'
+              onChange={formik.handleChange('password2')}
+              value={formik.values.password2}
             />
           </div>
-          <div className='form-group'>
+          <div className='error'>
+            {formik.touched.password2 && formik.errors.password2 ? (
+              <div>{formik.errors.password2}</div>
+            ) : null}
+          </div>
+          <div className='form-group mt-5'>
             <button type='submit' className='btn btn-block'>
               Submit
             </button>

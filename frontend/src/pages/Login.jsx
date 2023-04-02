@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { FaSignInAlt } from 'react-icons/fa';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import CustomInput from '../components/CustomInput';
 
 function Login() {
   const navigate = useNavigate();
@@ -62,10 +63,10 @@ function Login() {
       <section className='form content'>
         <form action='' onSubmit={formik.handleSubmit}>
           <div className='mt-3'>
-            <input
+            <CustomInput
               type='email'
               name='email'
-              placeholder='Email'
+              label='Email'
               className='form-control'
               id='email'
               onChange={formik.handleChange('email')}
@@ -80,10 +81,10 @@ function Login() {
             ) : null}
           </div>
           <div className='mt-3'>
-            <input
+            <CustomInput
               type='password'
               name='password'
-              placeholder='Password'
+              label='Password'
               className='form-control'
               id='password'
               onChange={formik.handleChange('password')}

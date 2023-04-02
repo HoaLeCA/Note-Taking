@@ -4,13 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import Noteform from '../components/Noteform';
 import Spinner from '../components/Spinner';
 import NoteItem from '../components/NoteItem';
-
 import { getNotes, reset } from '../features/notes/noteSlice';
 
 function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { user } = useSelector((state) => state.auth);
   const { notes, isLoading } = useSelector((state) => state.notes);
   useEffect(() => {
@@ -18,7 +16,6 @@ function Dashboard() {
       navigate('/login');
     }
     dispatch(getNotes());
-
     return () => {
       dispatch(reset());
     };
@@ -27,7 +24,6 @@ function Dashboard() {
   if (isLoading) {
     return <Spinner />;
   }
-
   return (
     <>
       <section className='heading'>

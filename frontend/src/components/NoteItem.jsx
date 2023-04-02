@@ -5,11 +5,16 @@ function NoteItem({ note }) {
   const dispatch = useDispatch();
 
   return (
-    <div className='note mb-5'>
-      <p className='text-left'>
-        {new Date(note.createdAt).toLocaleString('en-US')}
+    <div className='note py-2 rounded-2 p-3'>
+      <p
+        className='d-flex justify-content-begin fw-bold'
+        style={{ fontSize: '0.8rem' }}
+      >
+        Created: {new Date(note.createdAt).toLocaleString('en-US')}
       </p>
-      <h6 className='fw-bold'>{note.text}</h6>
+      <p style={{ fontSize: '1rem' }} className='fw-light'>
+        {note.text}
+      </p>
       <button onClick={() => dispatch(deleteNote(note._id))} className='close'>
         X
       </button>
