@@ -21,17 +21,17 @@ app.use('/api/notes', require('./routers/noteRoutes'));
 app.use('/api/users', require('./routers/userRoutes'));
 
 // server fontend, it is required when deploy the application
-if (process.env.NODE_ENV === 'production') {
-  // static folder
-  app.use(express.static(path.join(__dirname, '../frontend/build')));
-  app.get('*', (req, res) =>
-    res.sendFile(
-      path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
-    )
-  );
-} else {
-  app.get('/', (req, res) => res.send('Please set production mode'));
-}
+// if (process.env.NODE_ENV === 'production') {
+//   // static folder
+//   app.use(express.static(path.join(__dirname, '../frontend/build')));
+//   app.get('*', (req, res) =>
+//     res.sendFile(
+//       path.resolve(__dirname, '../', 'frontend', 'build', 'index.html')
+//     )
+//   );
+// } else {
+//   app.get('/', (req, res) => res.send('Please set production mode'));
+// }
 // middelware
 app.use(errorHandler);
 
