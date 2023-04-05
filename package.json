@@ -1,7 +1,7 @@
 {
-  "name": "mern-app",
-  "version": "1.0.0",
-  "description": "GoalSetter",
+  "name": "note-app",
+  "version": "2.0.0",
+  "description": "Notetaking",
   "main": "server.js",
 
   "scripts": {
